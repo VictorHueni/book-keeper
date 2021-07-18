@@ -4,7 +4,7 @@ const modalClose = document.getElementById('close-modal');
 const bookmarkForm = document.getElementById('bookmark-form');
 const websiteNameEl = document.getElementById('website-name');
 const websiteUrlEl = document.getElementById('website-url');
-const bookmarksContainer = document.getElementById('bookmarks-container');
+const bookmarksContainer = document.getElementById('container');
 
 let bookmarks = [];
 
@@ -38,6 +38,42 @@ function validate(nameValue, urlValue) {
     }
 }
 
+// Build our bookmarks DOM
+function buildBookmarks() {
+    bookmarks.forEach((bookmark) => {
+        const { name, url } = bookmark;
+        // Item
+        const item = document.createElement('div');
+        item.classList.add('item');
+
+        // Close Icon
+        const closeIcon = document.createElement('i');
+        closeIcon.classList.add('fas', 'fa-trash-alt');
+        closeIcon.setAttribute('title', 'Delete Bookmark');
+        closeIcon.setAttribute('onclick', `deleteBookmark('${url}')`);
+
+        // Favicon / Link Container
+        const linkInfo = document.createElement('div');
+        linkInfo.classList.add('name');
+
+        // Favicon
+        const favicon = document.createElement('img');
+        favicon.setAttribute('img', `https://www.google.com/s2/favicons?domain=${url}`);
+        favicon.setAttribute('alt', 'Favicon');
+
+        // Link
+        const link = document.createElement('a');
+        link.setAttribute('href', `${url}`);
+        link.setAttribute('target', '_blank');
+        link.textContent = name;
+
+        // Append to bookmarks container
+        linkInfo.append(favicon, link);
+        item.append(closeIcon, linkInfo);
+        bookmarksContainer.appendChild(item);
+    });
+}
+
 // Fetch Bookmarks from localStorage
 function fetchBookmarks() {
     // Get Bookmarks from localStorage if available
@@ -47,11 +83,13 @@ function fetchBookmarks() {
         //Create bookmarks array in localStorage
         bookmarks = [{
             name: 'Zero To mastery',
-            url: 'zerotomastery.io/',
+            url: 'https://zerotomastery.io/',
         }];
         localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
     }
+    buildBookmarks();
 }
+
 
 // Handle Data from Form
 function storeBookmark(e) {
